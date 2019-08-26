@@ -1,133 +1,50 @@
 <template>
   <div class="movie_body">
     <ul>
-      <li>
+
+      <li v-for="item in movieList" :key="item.id">
+        <!-- 【16】想想什么时候用item.id,什么时候用item.index,如果接口中有id就用item.id -->
         <div class="pic_show">
-          <img src="/images/movie_1.jpg" /><!-- 【思考这个为什么路径不对却能导入】 -->
+          <img :src="item.img | setWH('128.180')" /> <!-- 【18】第一个参数是item.img，第二个参数是128.180记住是字符串 -->
+          <!-- 【14】【思考这个为什么路径不对却能导入】 -->
         </div>
         <div class="info_list">
-          <h2>无名之辈</h2>
+          <h2>{{item.nm}}
+            <img v-if="item.version" src="@/assets/maxs.png"></img>
+          </h2>
           <p>
             观众评价
-            <span class="grade">9.2</span>
+            <span class="grade">{{item.sc}}</span>
           </p>
-          <p>主演: 陈建斌,任素汐,潘斌龙</p>
-          <p>今天55家影院放映607场</p>
+          <p>主演: {{item.star}}</p>
+          <p>{{item.showInfo}}</p>
         </div>
         <div class="btn_mall">购票</div>
       </li>
-      <li>
-        <div class="pic_show">
-          <img src="/images/movie_2.jpg" />
-        </div>
-        <div class="info_list">
-          <h2>毒液：致命守护者</h2>
-          <p>
-            观众评
-            <span class="grade">9.3</span>
-          </p>
-          <p>主演: 汤姆·哈迪,米歇尔·威廉姆斯,里兹·阿迈德</p>
-          <p>今天56家影院放映443场</p>
-        </div>
-        <div class="btn_mall">购票</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="/images/movie_1.jpg" />
-        </div>
-        <div class="info_list">
-          <h2>无名之辈</h2>
-          <p>
-            观众评
-            <span class="grade">9.2</span>
-          </p>
-          <p>主演: 陈建斌,任素汐,潘斌龙</p>
-          <p>今天55家影院放映607场</p>
-        </div>
-        <div class="btn_mall">购票</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="/images/movie_2.jpg" />
-        </div>
-        <div class="info_list">
-          <h2>毒液：致命守护者</h2>
-          <p>
-            观众评
-            <span class="grade">9.3</span>
-          </p>
-          <p>主演: 汤姆·哈迪,米歇尔·威廉姆斯,里兹·阿迈德</p>
-          <p>今天56家影院放映443场</p>
-        </div>
-        <div class="btn_mall">购票</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="/images/movie_1.jpg" />
-        </div>
-        <div class="info_list">
-          <h2>无名之辈</h2>
-          <p>
-            观众评
-            <span class="grade">9.2</span>
-          </p>
-          <p>主演: 陈建斌,任素汐,潘斌龙</p>
-          <p>今天55家影院放映607场</p>
-        </div>
-        <div class="btn_mall">购票</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="/images/movie_2.jpg" />
-        </div>
-        <div class="info_list">
-          <h2>毒液：致命守护者</h2>
-          <p>
-            观众评
-            <span class="grade">9.3</span>
-          </p>
-          <p>主演: 汤姆·哈迪,米歇尔·威廉姆斯,里兹·阿迈德</p>
-          <p>今天56家影院放映443场</p>
-        </div>
-        <div class="btn_mall">购票</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="/images/movie_1.jpg" />
-        </div>
-        <div class="info_list">
-          <h2>无名之辈</h2>
-          <p>
-            观众评
-            <span class="grade">9.2</span>
-          </p>
-          <p>主演: 陈建斌,任素汐,潘斌龙</p>
-          <p>今天55家影院放映607场</p>
-        </div>
-        <div class="btn_mall">购票</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="/images/movie_2.jpg" />
-        </div>
-        <div class="info_list">
-          <h2>毒液：致命守护者</h2>
-          <p>
-            观众评
-            <span class="grade">9.3</span>
-          </p>
-          <p>主演: 汤姆·哈迪,米歇尔·威廉姆斯,里兹·阿迈德</p>
-          <p>今天56家影院放映443场</p>
-        </div>
-        <div class="btn_mall">购票</div>
-      </li>
+
     </ul>
   </div>
 </template>
 
 <script>
 export default {
-  name: "nowplaying"
+  name: "nowplaying",
+  data() {
+    return {
+      movieList: [] /* 【15、为什么这里尽量用数组】 */
+    };
+  },
+  mounted() {
+    this.axios.get("/api/movieOnInfoList?cityId=10").then(res => {//【16】记得这里api之前要加/
+      console.log('2')
+      var msg = res.data.msg;
+      console.log(msg);
+      if (msg === "ok") {
+
+        this.movieList = res.data.data.movieList;
+      } 
+    });
+  }
 };
 </script>
 

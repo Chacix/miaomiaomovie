@@ -18,7 +18,8 @@
         </div>
       </div>
 
-      <CityList /><!-- 5记住HTML标签的层级，这样就好做 -->
+      <CityList />
+      <!-- 【5】记住HTML标签的层级，这样就好做 -->
     </div>
 
     <TabBar />
@@ -26,7 +27,7 @@
 </template>
 
 <script>
-import Header from "@/components/Header"; //记得这里是@/而不是@
+import Header from "@/components/Header"; //【10】记得这里是@/而不是@
 import TabBar from "@/components/TabBar";
 import CityList from "@/components/CityList";
 

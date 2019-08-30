@@ -6,7 +6,7 @@
       <div class="movie_menu">
         <!-- 这里加二级路由 -->
         <router-link tag="div" to="/movie/city" class="city_name">
-          <span>大连</span>
+          <span>{{ $store.state.city.nm }}</span>
           <i class="iconfont icon-lower-triangle"></i>
         </router-link>
 
@@ -26,17 +26,52 @@
       </keep-alive>
     </div>
     <TabBar />
+    <!-- <MessageBox /> 【39】多加这个没用，最好用js生成-->
   </div>
 </template>
 
 <script>
 import Header from "@/components/Header"; //记得这里是@/而不是@
 import TabBar from "@/components/TabBar";
+
+import { messageBox } from "@/components/js/index.js";
+
 export default {
   name: "Movie",
   components: {
     Header,
     TabBar
+    /*    messageBox ,
+     */
+  },
+  mounted() {
+    setTimeout(() => {
+      this.axios.get("/api/getLocation").then(res => {
+        var msg = res.data.msg;
+        if (msg === "ok") {
+
+          var nm = res.data.data.nm;
+          var id = res.data.data.id;
+          if(this.$store.state.city.id === id){
+            return;
+          }
+
+
+          messageBox({
+            title: "定位",
+            content: nm,/* 【40】这个地理位置能定位海口想想怎么搞 */
+            ok: "切换定位",
+            cancel: "取消",
+ 
+            handleOk() {
+              window.localStorage.setItem('nowNm',nm);
+              window.localStorage.setItem('nowId',id);
+              window.location.reload();
+            }
+          });
+        }
+      });
+    }, 2000);
   }
 };
 </script>
@@ -63,7 +98,8 @@ export default {
       height: 100%;
       line-height: 45px;
     }
-    .city_name.active {/* 5、记1住buneng写.city_name .active 而是.city_name.active */
+    .city_name.active {
+      /* 5、记1住buneng写.city_name .active 而是.city_name.active */
       color: #ef4238;
       border-bottom: 2px #ef4238 solid;
     }

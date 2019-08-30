@@ -18,9 +18,10 @@ export default {
       path: "nowplaying",
       component: () => import("@/components/NowPlaying")
     },
-    {/*  二级路由的默认显示*/
-      path:"/movie",
-      redirect:"/movie/nowplaying"
+    {
+      /*  二级路由的默认显示*/
+      path: "/movie",
+      redirect: "/movie/nowplaying"
     }
-  ] 
+  ]
 };

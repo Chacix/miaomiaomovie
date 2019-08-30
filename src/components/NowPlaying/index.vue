@@ -1,49 +1,126 @@
 <template>
-  <div class="movie_body">
-    <ul>
-
-      <li v-for="item in movieList" :key="item.id">
-        <!-- 【16】想想什么时候用item.id,什么时候用item.index,如果接口中有id就用item.id -->
-        <div class="pic_show">
-          <img :src="item.img | setWH('128.180')" /> <!-- 【18】第一个参数是item.img，第二个参数是128.180记住是字符串 -->
-          <!-- 【14】【思考这个为什么路径不对却能导入】 -->
-        </div>
-        <div class="info_list">
-          <h2>{{item.nm}}
-            <img v-if="item.version" src="@/assets/maxs.png"></img>
-          </h2>
-          <p>
-            观众评价
-            <span class="grade">{{item.sc}}</span>
-          </p>
-          <p>主演: {{item.star}}</p>
-          <p>{{item.showInfo}}</p>
-        </div>
-        <div class="btn_mall">购票</div>
-      </li>
-
-    </ul>
+  <div class="movie_body" ref="movie_body">
+    <Loading v-if="isLoading" /><!-- 【31】loading位置 -->
+    <Scroller
+      v-else
+      :handleToScroll="handleToScroll"
+      :handleToTouchEnd="handleToTouchEnd"
+    >
+      <ul>
+        <li class="pullDown">{{ pullDownMsg }}</li>
+        <li v-for="item in movieList" :key="item.id">
+          <!-- 【16】想想什么时候用item.id,什么时候用item.index,如果接口中有id就用item.id -->
+          <div class="pic_show" @tap="handleToDetail">
+            <img :src="item.img | setWH('128.180')" />
+            <!-- 【18】第一个参数是item.img，第二个参数是128.180记住是字符串 -->
+            <!-- 【14】【思考这个为什么路径不对却能导入】 -->
+          </div>
+          <div class="info_list">
+            <h2>
+              {{ item.nm }}
+              <img v-if="item.version" src="@/assets/maxs.png" />
+            </h2>
+            <p>
+              观众评价
+              <span class="grade">{{ item.sc }}</span>
+            </p>
+            <p>主演: {{ item.star }}</p>
+            <p>{{ item.showInfo }}</p>
+          </div>
+          <div class="btn_mall">购票</div>
+        </li>
+      </ul>
+    </Scroller>
   </div>
 </template>
 
 <script>
+//import BScroll from 'better-scroll';/* 【23】满足div在外的长宽小，div嵌套里面的长宽大 */
+
 export default {
   name: "nowplaying",
   data() {
     return {
-      movieList: [] /* 【15、为什么这里尽量用数组】 */
+      movieList: [] /* 【15、为什么这里尽量用数组】 */,
+      pullDownMsg: "",
+      isLoading: true,
+      prevCityId:-1
     };
   },
-  mounted() {
-    this.axios.get("/api/movieOnInfoList?cityId=10").then(res => {//【16】记得这里api之前要加/
-      console.log('2')
-      var msg = res.data.msg;
-      console.log(msg);
-      if (msg === "ok") {
+  activated() {/*  【36】为什么这里是把mounted换成 activated*/ 
+    var cityId=this.$store.state.city.id;
 
+    if(this.prevCityId === cityId){
+      return;
+    }
+
+    this.isLoading = true
+    console.log('【37】当换城市的时候会请求');
+
+    this.axios.get("/api/movieOnInfoList?cityId="+cityId).then(res => {
+      //【16】记得这里api之前要加/
+      var msg = res.data.msg;
+
+      if (msg === "ok") {
         this.movieList = res.data.data.movieList;
-      } 
+        this.isLoading = false; //【29】请求成功就不渲染loading
+        this.prevCityId = cityId
+        // this.$nextTick(()=>{/* 【22】这个方法保证我们数据在赋完值之后，我们的界面渲染完毕之后再去拿这个方法回调 */
+        //   var scroll = new BScroll(this.$refs.movie_body,{
+        //     tap:true,
+        //     probeType:1 //上拉到极限会刷新
+        //   });/* 【24】bscroll要两个参数，其中第一格就是dom中的元素 */
+        //   scroll.on('scroll',(pos)=>{
+        //     if(pos.y > 30){
+        //       this.pullDownMsg = '正在更新中';
+        //     }
+
+        //   })
+        //   scroll.on('touchEnd',(pos)=>{
+        //     if(pos.y > 30){
+        //       this.axios.get('/api/movieOnInfoList?cityId=11').then((res)=>{
+        //         var msg = res.data.msg;
+        //         if(msg === 'ok'){
+        //           this.pullDownMsg = '更新成功'
+        //           setTimeout(() => {
+        //             this.movieList = res.data.data.movieList;
+        //             this.pullDownMsg = '';
+        //           }, 1000);
+        //         }
+        //       })
+        //       this.pullDownMsg = '更新成功';
+        //     }
+
+        //   })
+        // });
+      }
     });
+  },
+  methods: {
+    handleToDetail() {
+      console.log("asa");
+    },
+    handleToScroll(pos) {
+      if (pos.y > 30) {
+        this.pullDownMsg = "正在更新中";
+      }
+    },
+    handleToTouchEnd(pos) {
+      this.isLoading = true; /* 【30】记得第二次请求要放在这里true */
+      if (pos.y > 30) {
+        this.axios.get("/api/movieOnInfoList?cityId=11").then(res => {
+          var msg = res.data.msg;
+          if (msg === "ok") {
+            this.isLoading = false;
+
+            setTimeout(() => {
+              this.movieList = res.data.data.movieList;
+              this.pullDownMsg = "";
+            }, 1000);
+          }
+        });
+      }
+    }
   }
 };
 </script>
@@ -53,6 +130,11 @@ export default {
   .movie_body {
     flex: 1;
     overflow: auto;
+    .pullDown {
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
     ul {
       margin: 0 12px;
       overflow: hidden;

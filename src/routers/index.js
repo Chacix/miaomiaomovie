@@ -11,7 +11,6 @@ export default new Router({
   mode: "history",
   base: process.env.BASE_URL,
   routes: [
-
     moviePage,
     minePage,
     cinemaPage,
@@ -29,7 +28,6 @@ export default new Router({
       /* 这个一定要放最后 ，不然会出现stack size 重定向错误路由到movie */
       path: "/*",
       redirect: "/movie"
-    },
-    
+    }
   ]
 });

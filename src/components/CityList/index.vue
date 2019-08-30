@@ -1,75 +1,93 @@
 <template>
   <div class="cinema_body">
-    <ul>
-      <li v-for="item in cinemaList" :key="item.id"><!-- 【21】多重渲染加局部过滤器 -->
-        <div>
-          <span>{{item.nm}}</span>
-          <span class="q">
-            <span class="price">{{item.sellPrice}}</span> 元起
-          </span>
-        </div>
-        <div class="address">
-          <span>{{item.addr}}</span>
-          <span>{{item.distance}}</span>
-        </div>
-        <div class="card">
-          <div v-for="(num,key) in item.tag" v-if="num===1" :key="key" :class="key | classCard">{{key | formatCard}}</div>
-        </div>
-      </li>
-    
-    </ul>
+    <Loading v-if="isLoading" />
+    <Scroller>
+      <ul>
+        <li v-for="item in cinemaList" :key="item.id">
+          <!-- 【21】多重渲染加局部过滤器 -->
+          <div>
+            <span>{{ item.nm }}</span>
+            <span class="q">
+              <span class="price">{{ item.sellPrice }}</span> 元起
+            </span>
+          </div>
+          <div class="address">
+            <span>{{ item.addr }}</span>
+            <span>{{ item.distance }}</span>
+          </div>
+          <div class="card">
+            <div
+              v-for="(num, key) in item.tag"
+              v-if="num === 1"
+              :key="key"
+              :class="key | classCard"
+            >
+              {{ key | formatCard }}
+            </div>
+          </div>
+        </li>
+      </ul>
+    </Scroller>
   </div>
 </template>
 
 <script>
 export default {
   name: "CityList",
-  data(){
-    return{
-       cinemaList:[]
+  data() {
+    return {
+      cinemaList: [],
+      isLoading: true,
+      prevCityId:-1
+    };
+  },
+  activated() {
+    var cityId = this.$store.state.city.id
+    if(this.prevCityId === cityId){
+      return;
     }
-  },
-  mounted(){
-    this.axios.get("/api/cinemaList?cityId=10").then((res)=>{
+
+    this.isLoading = true;
+    this.axios.get("/api/cinemaList?cityId="+cityId).then(res => {
       var msg = res.data.msg;
-      if(msg === "ok"){
-        this.cinemaList = res.data.data.cinemas
+      if (msg === "ok") {
+        this.cinemaList = res.data.data.cinemas;
+        this.isLoading = false;
+        this.prevCityId = cityId
       }
-    })
+    });
   },
-  filters:{
-    formatCard(key){
+  filters: {
+    formatCard(key) {
       var card = [
-        { key:'allowRefund',value:"改签" },
-        { key:"endorse",value:"退"},
-        { key:"sell",value:"折扣卡"},
-        { key:"snack",value:"小吃"}
+        { key: "allowRefund", value: "改签" },
+        { key: "endorse", value: "退" },
+        { key: "sell", value: "折扣卡" },
+        { key: "snack", value: "小吃" }
       ];
 
-      for(let i=0;i<card.length;i++){
-        if(card[i].key === key){
-          return card[i].value
+      for (let i = 0; i < card.length; i++) {
+        if (card[i].key === key) {
+          return card[i].value;
         }
-
       }
-      return '';
+      return "";
     },
-    classCard(key){
+    classCard(key) {
       var card = [
-        { key:'allowRefund',value:"bl" },
-        { key:"endorse",value:"bl"},
-        { key:"sell",value:"or"},
-        { key:"snack",value:"or"}
+        { key: "allowRefund", value: "bl" },
+        { key: "endorse", value: "bl" },
+        { key: "sell", value: "or" },
+        { key: "snack", value: "or" }
       ];
 
-      for(let i=0;i<card.length;i++){
-        if(card[i].key === key){
-          return card[i].value
+      for (let i = 0; i < card.length; i++) {
+        if (card[i].key === key) {
+          return card[i].value;
         }
-
       }
-      return '';
-    },
+      return "";
+    }
   }
 };
 </script>
@@ -124,7 +142,6 @@ export default {
   color: #589daf;
   border: 1px solid #589daf;
 }
-
 
 /* menu */
 </style>

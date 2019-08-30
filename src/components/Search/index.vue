@@ -17,12 +17,12 @@
           </div>
           <div class="info">
             <p>
-              <span>{{item.nm}}</span>
-              <span>{{item.sc}}</span>
+              <span>{{ item.nm }}</span>
+              <span>{{ item.sc }}</span>
             </p>
-            <p>{{item.enm}}</p>
-            <p>{{item.cat}}</p>
-            <p>{{item.rt}}</p>
+            <p>{{ item.enm }}</p>
+            <p>{{ item.cat }}</p>
+            <p>{{ item.rt }}</p>
           </div>
         </li>
       </ul>
@@ -33,41 +33,46 @@
 <script>
 export default {
   name: "search",
-  data(){
-    return{
-      message:'',
-      moviesList:[]
-    }
+  data() {
+    return {
+      message: "",
+      moviesList: []
+    };
   },
-  methods:{
-    cancelRequest(){
-      if(typeof this.source === 'function'){
-        this.source('终止请求')
+  methods: {
+    cancelRequest() {
+      if (typeof this.source === "function") {
+        this.source("终止请求");
       }
     }
   },
-  watch:{/* 【19】为什么这里用watch不用计算属性，而且还在watch里面调用axios */
-    message(newValue){
+  watch: {
+    /* 【19】为什么这里用watch不用计算属性，而且还在watch里面调用axios */
+    message(newValue) {
       var that = this;
-      this.cancelRequest();/* 【20】!设置防抖节功能的axios拦截 */
+      var cityId = this.$store.state.city.id;
+      this.cancelRequest(); /* 【20】!设置防抖节功能的axios拦截 */
 
-      this.axios.get("/api/searchList?cityId=10&kw="+newValue,{
-        cancelToken: new this.axios.CancelToken(function(c){
-          that.source = c ;
+      this.axios
+        .get("/api/searchList?cityId="+ cityId +"&kw=" + newValue, {
+          cancelToken: new this.axios.CancelToken(function(c) {
+            that.source = c;
+          })
         })
-      }).then(res=>{
-        var msg = res.data.msg;
-        var movies = res.data.data.movies;
-        if(msg && movies){
-          this.moviesList = res.data.data.movies.list;
-        }
-      }).catch((err)=>{
-        if(this.axios.isCancel(err)) {
-          console.log('Rquest canceled',err.message);
-        } else {
-          console.log(err)
-        }
-      })
+        .then(res => {
+          var msg = res.data.msg;
+          var movies = res.data.data.movies;
+          if (msg && movies) {
+            this.moviesList = res.data.data.movies.list;
+          }
+        })
+        .catch(err => {
+          if (this.axios.isCancel(err)) {
+            console.log("Rquest canceled", err.message);
+          } else {
+            console.log(err);
+          }
+        });
     }
   }
 };

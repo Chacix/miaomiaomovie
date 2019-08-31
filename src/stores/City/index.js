@@ -1,6 +1,6 @@
 const state = {
   nm: window.localStorage.getItem("nowNm") || "北京",
-  id: window.localStorage.getItem("id") || 1
+  id: window.localStorage.getItem("nowId") || 1/* 【43】是nowId不是id */
 };
 
 const actions = {};

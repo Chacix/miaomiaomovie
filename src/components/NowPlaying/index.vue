@@ -10,13 +10,13 @@
         <li class="pullDown">{{ pullDownMsg }}</li>
         <li v-for="item in movieList" :key="item.id">
           <!-- 【16】想想什么时候用item.id,什么时候用item.index,如果接口中有id就用item.id -->
-          <div class="pic_show" @tap="handleToDetail">
+          <div class="pic_show" @tap="handleToDetail(item.id)">
             <img :src="item.img | setWH('128.180')" />
             <!-- 【18】第一个参数是item.img，第二个参数是128.180记住是字符串 -->
             <!-- 【14】【思考这个为什么路径不对却能导入】 -->
           </div>
           <div class="info_list">
-            <h2>
+            <h2 @tap="handleToDetail(item.id)">
               {{ item.nm }}
               <img v-if="item.version" src="@/assets/maxs.png" />
             </h2>
@@ -54,11 +54,11 @@ export default {
       return;
     }
 
-    this.isLoading = true
+ 
     console.log('【37】当换城市的时候会请求');
 
     this.axios.get("/api/movieOnInfoList?cityId="+cityId).then(res => {
-      //【16】记得这里api之前要加/
+        this.isLoading = false//【16】记得这里api之前要加
       var msg = res.data.msg;
 
       if (msg === "ok") {
@@ -97,21 +97,26 @@ export default {
     });
   },
   methods: {
-    handleToDetail() {
-      console.log("asa");
+    handleToDetail(movieId) {
+      this.$router.push('/movie/detail/1/'+movieId)/* 【46】路由跳转，与history */
+       this.isLoading = false;/* 【45】为什么要加这里，处理知乎要加 */
     },
     handleToScroll(pos) {
-      if (pos.y > 30) {
-        this.pullDownMsg = "正在更新中";
-      }
+    
+      if (pos.y > 30 ) {
+        this.pullDownMsg = "正在更新中s";
+        
+      } 
     },
     handleToTouchEnd(pos) {
-      this.isLoading = true; /* 【30】记得第二次请求要放在这里true */
+             this.isLoading = true;  /* 【30】记得第二次请求要放在这里true  */
       if (pos.y > 30) {
         this.axios.get("/api/movieOnInfoList?cityId=11").then(res => {
+   
           var msg = res.data.msg;
           if (msg === "ok") {
             this.isLoading = false;
+            this.pullDownMsg = "更新成功"
 
             setTimeout(() => {
               this.movieList = res.data.data.movieList;

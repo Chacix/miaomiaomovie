@@ -27,6 +27,7 @@
     </div>
     <TabBar />
     <!-- <MessageBox /> 【39】多加这个没用，最好用js生成-->
+    <router-view name="detail" /><!--【47】匹配了上面那个二级路由就不会匹配第二个路由  -->
   </div>
 </template>
 
@@ -52,8 +53,9 @@ export default {
 
           var nm = res.data.data.nm;
           var id = res.data.data.id;
-          if(this.$store.state.city.id === id){
-            return;
+         
+          if(this.$store.state.city.id == id){/* 【41】为什么这里用==不用=== */
+            return;/* 【42】代码先pull再push */
           }
 
 

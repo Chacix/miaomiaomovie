@@ -105,12 +105,13 @@ export default {
     
       if (pos.y > 30 ) {
         this.pullDownMsg = "正在更新中s";
-        
+         this.isLoading = false;
       } 
     },
     handleToTouchEnd(pos) {
-             this.isLoading = true;  /* 【30】记得第二次请求要放在这里true  */
+            /* 【30】记得第二次请求要放在这里true  */
       if (pos.y > 30) {
+        this.isLoading = true;
         this.axios.get("/api/movieOnInfoList?cityId=11").then(res => {
    
           var msg = res.data.msg;

@@ -39,14 +39,28 @@ import { messageBox } from "@/components/js/index.js";
 
 export default {
   name: "Movie",
+  data(){
+    return{
+      movieList:[],
+    }
+  },
   components: {
     Header,
     TabBar
     /*    messageBox ,
      */
   },
+  
   mounted() {
     setTimeout(() => {
+
+      this.axios.get("/mock/index.json").then(res => {
+        var msg = res.data.msg;
+        if (msg === "ok") {
+           this.movieList = res.data.data.movieList;
+           console.log("mock接口"+this.movieList)
+        }
+      })
       this.axios.get("/api/getLocation").then(res => {
         var msg = res.data.msg;
         if (msg === "ok") {

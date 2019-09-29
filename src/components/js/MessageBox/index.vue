@@ -3,8 +3,8 @@
     <h2>{{title}}</h2>
     <p>{{content}}</p>
     <div class="bottom">
-      <div @touchstart="handleCancel">{{cancel}}</div>
-      <div @touchstart="handleOk">{{ok}}</div>
+      <div v-if="cancel" @touchstart="handleCancel">{{cancel}}</div><!-- 这cancel是父组件传的 -->
+      <div v-if="ok" @touchstart="handleOk">{{ok}}</div>
     </div>
   </div>
 </template>

@@ -10,8 +10,13 @@
       <input type="submit" value="登录" @touchstart="handleToLogin"/>
     </div>
     <div class="login_link">
-      <a href="#">立即注册</a>
-      <a href="#">找回密码</a>
+      <router-link to="/mine/register">
+        立即注册
+      </router-link>
+      <router-link to="/mine/findPassword">
+        找回密码
+      </router-link>
+
     </div>
   </div>
 </template>
